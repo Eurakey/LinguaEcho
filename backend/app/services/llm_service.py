@@ -1,12 +1,13 @@
 """
 LangChain service for LLM interactions
-Handles both OpenRouter and Groq providers
+Handles OpenRouter, Groq, and Google AI Studio providers
 """
 import json
 from typing import List, Dict
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 from app.config import settings
 from app.models.schemas import Language, Scenario, Message, Report
@@ -22,6 +23,12 @@ class LLMService:
             self.llm = ChatGroq(
                 groq_api_key=settings.GROQ_API_KEY,
                 model_name=settings.GROQ_MODEL,
+                temperature=0.7
+            )
+        elif settings.LLM_PROVIDER == "google":
+            self.llm = ChatGoogleGenerativeAI(
+                model=settings.GOOGLE_MODEL,
+                google_api_key=settings.GOOGLE_API_KEY,
                 temperature=0.7
             )
         else:  # openrouter
