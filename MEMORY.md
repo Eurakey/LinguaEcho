@@ -2,7 +2,7 @@
 
 Last updated: 2025-10-31
 
-## Project Status: MVP Complete - Tailwind CSS Fixed - Ready for API Key Setup
+## Project Status: MVP Complete - Ready for Production Deployment
 
 ### ✅ Completed Components
 
@@ -228,6 +228,34 @@ curl http://localhost:8000/
 - Can easily upgrade to Vertex AI later without code changes
 
 **Usage**: Set `LLM_PROVIDER=google` and `GOOGLE_API_KEY` in `.env`
+
+### 📦 Deployment Configuration (2025-10-31)
+
+**Status**: Ready for production deployment
+
+**Files Created**:
+1. `backend/Procfile` - Railway deployment configuration
+2. `DEPLOYMENT.md` - Complete deployment guide with step-by-step instructions
+
+**Recommended Stack**:
+- **Frontend**: Vercel (Vue 3 + Vite, auto-deploy from GitHub)
+- **Backend**: Railway (FastAPI + LangChain, 500 hrs/month free)
+- **LLM**: Google AI Studio (Gemini, 60 RPM free tier)
+
+**Deployment Timeline**: ~30-45 minutes
+
+**Next Steps**:
+1. Follow DEPLOYMENT.md for complete instructions
+2. Deploy backend to Railway first (get production URL)
+3. Deploy frontend to Vercel (set VITE_API_BASE_URL to Railway URL)
+4. Update Railway CORS_ORIGINS to include Vercel URL
+5. Test end-to-end functionality
+
+**Required Environment Variables**:
+- Railway: `LLM_PROVIDER`, `GOOGLE_API_KEY`, `GOOGLE_MODEL`, `CORS_ORIGINS`, `RATE_LIMIT_PER_HOUR`
+- Vercel: `VITE_API_BASE_URL`
+
+**Cost**: $0/month on free tiers (sufficient for MVP)
 
 ### 🐛 Issues to Watch
 
