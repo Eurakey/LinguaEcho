@@ -1,7 +1,7 @@
 """
 Main FastAPI application
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -39,7 +39,7 @@ app.include_router(api_router, prefix="/api")
 
 @app.get("/")
 @limiter.limit(f"{settings.RATE_LIMIT_PER_HOUR}/hour")
-async def root():
+async def root(request: Request):
     """Root endpoint"""
     return {
         "message": "Welcome to LinguaEcho API",
