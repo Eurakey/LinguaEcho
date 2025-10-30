@@ -175,7 +175,7 @@ curl http://localhost:8000/
 
 ### 🔧 Recent Fixes (2025-10-31)
 
-#### Tailwind CSS v4 Styling Issue
+#### 1. Tailwind CSS v4 Styling Issue (Fixed)
 **Problem**: Frontend displayed only white background with centered black text, no styling applied.
 
 **Root Cause**: Tailwind CSS v4 requires different configuration syntax than v3. The project had v4 installed but was using v3-style configuration.
@@ -186,6 +186,20 @@ curl http://localhost:8000/
 3. Cleared Vite cache and rebuilt
 
 **Result**: All Tailwind utility classes (colors, spacing, shadows, etc.) now generate and apply correctly.
+
+#### 2. History and Conversation Pages White Screen Issue (Fixed)
+**Problem**: History and Conversation pages showed completely white screens while Home page worked fine.
+
+**Root Cause**: Naive UI components require a provider wrapper to render. The application was missing `NMessageProvider` which is required for:
+- All Naive UI components to render properly (NButton, NCard, NModal, NSpin, NInput, NTag)
+- The `useMessage()` composable used in both History.vue and Conversation.vue
+
+**Solution Applied**:
+1. Updated `frontend/src/App.vue` - Wrapped `<router-view />` with `<n-message-provider>`
+2. Imported `NMessageProvider` from 'naive-ui'
+3. Restarted dev server
+
+**Result**: All pages now render correctly with full Naive UI component support.
 
 ### 🐛 Issues to Watch
 
