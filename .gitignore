@@ -3,7 +3,10 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
 package-lock.json
+.npmrc
 
 # Python
 __pycache__/
@@ -13,31 +16,55 @@ __pycache__/
 venv/
 env/
 .Python
+*.egg-info/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+instance/
 
 # Environment variables
 .env
 .env.local
 .env.production
+.env*.local
+.env*.*.local
 
 # IDE
 .vscode/
+.vscode/*.log
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
+extensions.json
 
 # Build
 dist/
 build/
+.output
+out/
+
+# Vite
+.vite/
+.vite-cache/
 
 # Testing
 .pytest_cache/
 coverage/
 .coverage
+htmlcov/
 
 # Logs
 *.log
+
+# Deployment
+.vercel
+.railway
 
 # Claude
 .claude/

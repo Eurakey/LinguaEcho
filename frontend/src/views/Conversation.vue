@@ -1,7 +1,7 @@
 <template>
   <div class="conversation-page min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b">
+    <!-- Sticky Header -->
+    <div class="sticky top-0 z-50 bg-white shadow-sm border-b">
       <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
         <div>
           <h1 class="text-2xl font-bold text-gray-800">
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Chat Messages -->
-    <div class="max-w-4xl mx-auto p-4">
+    <div class="max-w-4xl mx-auto p-4 pt-6">
       <div class="space-y-4 mb-4" ref="messagesContainer">
         <!-- Welcome message -->
         <div v-if="conversationStore.messages.length === 0" class="text-center py-8">
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Input Area -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-40">
       <div class="max-w-4xl mx-auto p-4">
         <div class="flex gap-2">
           <n-input
