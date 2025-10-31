@@ -69,3 +69,6 @@ htmlcov/
 # Claude
 .claude/
 CLAUDE.md
+DEPLOYMENT.md
+MEMORY.md
+QUICKSTART.md
