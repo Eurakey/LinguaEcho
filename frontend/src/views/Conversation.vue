@@ -81,6 +81,7 @@
             :autosize="{ minRows: 1, maxRows: 4 }"
             @keydown.enter.exact.prevent="sendMessage"
             :disabled="conversationStore.isLoading"
+            clearable
           />
           <n-button
             type="primary"
@@ -91,9 +92,14 @@
             Send
           </n-button>
         </div>
-        <p class="text-xs text-gray-500 mt-2">
-          Press Enter to send • Shift+Enter for new line
-        </p>
+        <div class="flex justify-between items-center">
+          <p class="text-xs text-gray-500 mt-2">
+            Press Enter to send • Shift+Enter for new line
+          </p>
+          <p v-if="userInput.length > 0" class="text-xs text-gray-500 mt-2">
+            {{ userInput.length }} characters
+          </p>
+        </div>
       </div>
     </div>
 
@@ -171,6 +177,18 @@ const errorMessage = ref('')
 const isGeneratingReport = ref(false)
 const messagesContainer = ref(null)
 
+// Draft key for localStorage
+const draftKey = computed(() => `draft-${conversationStore.sessionId}`)
+
+// Auto-save draft
+watch(userInput, (newVal) => {
+  if (newVal.trim()) {
+    localStorage.setItem(draftKey.value, newVal)
+  } else {
+    localStorage.removeItem(draftKey.value)
+  }
+})
+
 // Computed
 const scenarioTitle = computed(() => {
   if (!conversationStore.scenario || !conversationStore.language) return ''
@@ -193,6 +211,7 @@ async function sendMessage() {
 
   const messageText = userInput.value.trim()
   userInput.value = ''
+  localStorage.removeItem(draftKey.value) // Clear draft after sending
 
   try {
     // Add user message to store
@@ -228,8 +247,10 @@ async function sendMessage() {
     scrollToBottom()
   } catch (error) {
     console.error('Error sending message:', error)
-    errorMessage.value = error.message || 'Failed to send message. Please try again.'
-    showError.value = true
+    // Show toast notification instead of modal
+    message.error(error.message || 'Failed to send message. Please try again.')
+    // Restore message to input for retry
+    userInput.value = messageText
   } finally {
     conversationStore.setLoading(false)
   }
@@ -300,6 +321,12 @@ onMounted(() => {
   if (!conversationStore.sessionId) {
     router.push('/')
     return
+  }
+
+  // Load draft from localStorage
+  const savedDraft = localStorage.getItem(draftKey.value)
+  if (savedDraft) {
+    userInput.value = savedDraft
   }
 
   // Load history store
