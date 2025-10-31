@@ -57,9 +57,9 @@ Last updated: 2025-10-31
 ### 🔑 Next Steps (Required Before Full Testing)
 
 #### 1. API Key Setup
-The backend .env file currently has placeholder API keys. To fully test the application:
+The backend .env file supports three LLM providers. Choose one:
 
-**Option A: OpenRouter (Recommended)**
+**Option A: OpenRouter**
 1. Visit https://openrouter.ai/
 2. Sign up for free account
 3. Generate API key
@@ -69,7 +69,7 @@ The backend .env file currently has placeholder API keys. To fully test the appl
    LLM_PROVIDER=openrouter
    ```
 
-**Option B: Groq (Alternative)**
+**Option B: Groq**
 1. Visit https://console.groq.com/
 2. Sign up for free account
 3. Generate API key
@@ -77,6 +77,16 @@ The backend .env file currently has placeholder API keys. To fully test the appl
    ```
    GROQ_API_KEY=gsk_xxxxxxxxxxxxx
    LLM_PROVIDER=groq
+   ```
+
+**Option C: Google AI Studio (NEW - Direct Gemini Access)**
+1. Visit https://aistudio.google.com/app/apikey
+2. Create API key (no billing required for free tier)
+3. Update `backend/.env`:
+   ```
+   GOOGLE_API_KEY=your_google_api_key
+   LLM_PROVIDER=google
+   GOOGLE_MODEL=gemini-2.0-flash-exp
    ```
 
 #### 2. Full Stack Testing
@@ -200,6 +210,24 @@ curl http://localhost:8000/
 3. Restarted dev server
 
 **Result**: All pages now render correctly with full Naive UI component support.
+
+#### 3. Google AI Studio Integration (2025-10-31)
+**Feature**: Added Google AI Studio as a third LLM provider option alongside OpenRouter and Groq.
+
+**Implementation**:
+1. Added `langchain-google-genai==3.0.0` dependency
+2. Updated `backend/app/config.py` with `GOOGLE_API_KEY` and `GOOGLE_MODEL` settings
+3. Added Google provider to `backend/app/services/llm_service.py` using `ChatGoogleGenerativeAI`
+4. Updated `.env.template` with Google configuration guide
+5. Fixed deprecated `langchain.schema` imports to use `langchain_core.messages`
+
+**Benefits**:
+- Direct API access to Google Gemini models (no proxy layer)
+- Free tier: 60 requests per minute
+- Simpler than OpenRouter for Google models
+- Can easily upgrade to Vertex AI later without code changes
+
+**Usage**: Set `LLM_PROVIDER=google` and `GOOGLE_API_KEY` in `.env`
 
 ### 🐛 Issues to Watch
 
