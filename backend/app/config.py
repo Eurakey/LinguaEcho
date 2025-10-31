@@ -15,8 +15,10 @@ class Settings:
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "openrouter")
     OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-exp:free")
     GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+    GOOGLE_MODEL: str = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash-exp")
 
     # CORS Configuration
     CORS_ORIGINS: List[str] = os.getenv(
@@ -32,6 +34,8 @@ class Settings:
         """Get the appropriate API key based on LLM provider"""
         if self.LLM_PROVIDER == "groq":
             return self.GROQ_API_KEY
+        elif self.LLM_PROVIDER == "google":
+            return self.GOOGLE_API_KEY
         return self.OPENROUTER_API_KEY
 
     @property
@@ -39,6 +43,8 @@ class Settings:
         """Get the appropriate model name based on LLM provider"""
         if self.LLM_PROVIDER == "groq":
             return self.GROQ_MODEL
+        elif self.LLM_PROVIDER == "google":
+            return self.GOOGLE_MODEL
         return self.OPENROUTER_MODEL
 
 
