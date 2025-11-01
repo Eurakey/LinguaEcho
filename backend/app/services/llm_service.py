@@ -3,7 +3,7 @@ LangChain service for LLM interactions
 Handles OpenRouter, Groq, and Google AI Studio providers
 """
 import json
-from typing import List, Dict
+from typing import List, Dict, AsyncGenerator
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -82,6 +82,41 @@ class LLMService:
         response = await self.llm.ainvoke(messages)
 
         return response.content
+
+    async def get_conversation_response_stream(
+        self,
+        language: Language,
+        scenario: Scenario,
+        user_message: str,
+        history: List[Message]
+    ) -> AsyncGenerator[str, None]:
+        """
+        Stream AI response for conversation token-by-token
+
+        Args:
+            language: Target language
+            scenario: Conversation scenario
+            user_message: User's latest message
+            history: Previous conversation history
+
+        Yields:
+            Chunks of AI response as they arrive from the LLM
+        """
+        # Build messages (same as non-streaming version)
+        system_prompt = get_conversation_system_prompt(language, scenario)
+        messages = [SystemMessage(content=system_prompt)]
+
+        # Add conversation history
+        messages.extend(self._convert_messages(history))
+
+        # Add current user message
+        messages.append(HumanMessage(content=user_message))
+
+        # Stream response from LLM
+        async for chunk in self.llm.astream(messages):
+            # chunk.content contains the text delta
+            if chunk.content:
+                yield chunk.content
 
     async def generate_report(
         self,

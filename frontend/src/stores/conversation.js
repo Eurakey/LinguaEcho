@@ -10,6 +10,10 @@ export const useConversationStore = defineStore('conversation', () => {
   const messages = ref([])
   const isLoading = ref(false)
 
+  // Streaming state
+  const streamingContent = ref('')
+  const isStreaming = ref(false)
+
   // Computed
   const userMessages = computed(() =>
     messages.value.filter(m => m.role === 'user')
@@ -39,12 +43,25 @@ export const useConversationStore = defineStore('conversation', () => {
     isLoading.value = loading
   }
 
+  function setStreaming(streaming) {
+    isStreaming.value = streaming
+    if (!streaming) {
+      streamingContent.value = ''
+    }
+  }
+
+  function updateStreamingContent(content) {
+    streamingContent.value += content
+  }
+
   function resetConversation() {
     sessionId.value = null
     language.value = null
     scenario.value = null
     messages.value = []
     isLoading.value = false
+    streamingContent.value = ''
+    isStreaming.value = false
   }
 
   function getConversationData() {
@@ -64,6 +81,9 @@ export const useConversationStore = defineStore('conversation', () => {
     scenario,
     messages,
     isLoading,
+    // Streaming state
+    streamingContent,
+    isStreaming,
     // Computed
     userMessages,
     turnCount,
@@ -72,6 +92,8 @@ export const useConversationStore = defineStore('conversation', () => {
     startNewConversation,
     addMessage,
     setLoading,
+    setStreaming,
+    updateStreamingContent,
     resetConversation,
     getConversationData
   }

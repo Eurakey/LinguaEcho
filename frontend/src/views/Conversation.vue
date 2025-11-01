@@ -60,8 +60,23 @@
           </div>
         </div>
 
+        <!-- Streaming message -->
+        <div v-if="conversationStore.isStreaming" class="flex justify-start">
+          <div class="bg-white shadow-sm border rounded-lg px-4 py-3 max-w-[70%]">
+            <p class="whitespace-pre-wrap">{{ conversationStore.streamingContent }}</p>
+            <div class="mt-2 flex items-center gap-2">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="text-xs text-gray-500">streaming...</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Loading indicator -->
-        <div v-if="conversationStore.isLoading" class="flex justify-start">
+        <div v-if="conversationStore.isLoading && !conversationStore.isStreaming" class="flex justify-start">
           <div class="bg-white shadow-sm border rounded-lg px-4 py-3">
             <n-spin size="small" />
             <span class="ml-2 text-gray-600">AI is typing...</span>
@@ -157,12 +172,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, nextTick, watch, onBeforeUnmount } from 'vue'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { NButton, NInput, NModal, NCard, NSpin, useMessage } from 'naive-ui'
 import { useConversationStore } from '../stores/conversation'
 import { useHistoryStore } from '../stores/history'
-import { sendChatMessage, generateReport } from '../services/api'
+import { sendChatMessage, sendChatMessageStream, generateReport } from '../services/api'
 import { SCENARIO_INFO, LANGUAGE_LABELS } from '../utils/constants'
 
 const router = useRouter()
@@ -217,6 +232,7 @@ async function sendMessage() {
     // Add user message to store
     conversationStore.addMessage('user', messageText)
     conversationStore.setLoading(true)
+    conversationStore.setStreaming(true)
 
     // Scroll to bottom
     await nextTick()
@@ -230,23 +246,38 @@ async function sendMessage() {
         content: m.content
       }))
 
-    // Send to API
-    const response = await sendChatMessage(
+    // Stream response from API
+    let fullResponse = ''
+
+    for await (const event of sendChatMessageStream(
       conversationStore.sessionId,
       conversationStore.language,
       conversationStore.scenario,
       messageText,
       history
-    )
+    )) {
+      if (event.type === 'chunk') {
+        // Update streaming content
+        conversationStore.updateStreamingContent(event.content)
+        fullResponse += event.content
 
-    // Add AI response
-    conversationStore.addMessage('assistant', response.reply)
+        // Auto-scroll as content arrives
+        await nextTick()
+        scrollToBottom()
+      } else if (event.type === 'done') {
+        // Finalize message
+        conversationStore.setStreaming(false)
+        conversationStore.addMessage('assistant', fullResponse)
 
-    // Scroll to bottom
-    await nextTick()
-    scrollToBottom()
+        await nextTick()
+        scrollToBottom()
+      } else if (event.type === 'error') {
+        throw new Error(event.error)
+      }
+    }
   } catch (error) {
     console.error('Error sending message:', error)
+    conversationStore.setStreaming(false)
     // Show toast notification instead of modal
     message.error(error.message || 'Failed to send message. Please try again.')
     // Restore message to input for retry
@@ -346,5 +377,39 @@ onMounted(() => {
 <style scoped>
 .conversation-page {
   padding-bottom: 120px; /* Space for fixed input */
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #6366f1;
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

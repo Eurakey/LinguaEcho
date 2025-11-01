@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { SSEClient } from './sse'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
@@ -55,6 +56,33 @@ export async function sendChatMessage(sessionId, language, scenario, message, hi
     return response.data
   } catch (error) {
     throw new Error(error.response?.data?.detail || 'Failed to send message')
+  }
+}
+
+/**
+ * Send a chat message with streaming response
+ * @returns {AsyncGenerator} - Async generator that yields SSE events
+ */
+export async function* sendChatMessageStream(sessionId, language, scenario, message, history) {
+  const url = `${API_BASE_URL}/api/chat/stream`
+
+  const requestBody = {
+    session_id: sessionId,
+    language,
+    scenario,
+    message,
+    history
+  }
+
+  const client = new SSEClient(url)
+
+  try {
+    for await (const event of client.stream(requestBody)) {
+      yield event
+    }
+  } catch (error) {
+    console.error('SSE streaming error:', error)
+    throw new Error(error.message || 'Failed to stream message')
   }
 }
 
