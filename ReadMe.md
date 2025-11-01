@@ -1,4 +1,4 @@
-# LINGUAECHO - 产品需求文档 (PRD)
+# LINGUAECHO
 
 ## 1. 项目概述
 
@@ -330,7 +330,6 @@ Conversation:
 4. 添加rate limiting
 5. 性能优化和测试
 
-**总预估时间: 7-9天**
 
 ---
 
@@ -362,26 +361,9 @@ async def chat_endpoint():
 
 ---
 
-## 7. 面试展示要点
+## 7. 未来扩展方向 (Phase 3+)
 
-### 7.1 技术亮点
-- ✅ **全栈能力**: Vue前端 + Python后端独立开发
-- ✅ **AI集成**: LangChain + LLM API实际应用
-- ✅ **现代技术栈**: FastAPI异步框架,Vue 3 Composition API
-- ✅ **工程化**: 合理的架构设计,API RESTful规范
-- ✅ **部署经验**: 云端部署,环境配置
-
-### 7.2 可演示功能
-1. 实时对话流畅性
-2. 报告质量(展示真实的错误分析)
-3. 历史记录功能
-4. 响应式设计(手机端适配)
-
----
-
-## 8. 未来扩展方向 (Phase 3+)
-
-### 8.1 功能扩展
+### 7.1 功能扩展
 - [ ] 用户账户系统
 - [ ] 自定义场景
 - [ ] 难度级别选择(初级/中级/高级)
@@ -390,24 +372,9 @@ async def chat_endpoint():
 - [ ] 每日一练推送
 - [ ] 学习进度可视化
 
-### 8.2 AI能力增强
+### 7.2 AI能力增强
 - [ ] 根据用户水平动态调整AI对话难度
 - [ ] 多模态支持(图片场景描述)
 - [ ] 实时语法建议(对话中subtle提示)
-
----
-
-## 9. 参考资源
-
-### 9.1 文档
-- FastAPI: https://fastapi.tiangolo.com
-- LangChain: https://python.langchain.com
-- Vue 3: https://vuejs.org
-- OpenRouter: https://openrouter.ai/docs
-
-### 9.2 部署平台
-- Vercel: https://vercel.com
-- Railway: https://railway.app
-- Render: https://render.com
 
 ---
