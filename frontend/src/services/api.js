@@ -11,9 +11,17 @@ const apiClient = axios.create({
   timeout: 30000 // 30 seconds
 })
 
-// Request interceptor
+// Request interceptor - add JWT token if available
 apiClient.interceptors.request.use(
   (config) => {
+    // Get token from localStorage
+    const token = localStorage.getItem('auth_token')
+
+    // Add Authorization header if token exists
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
     return config
   },
   (error) => {
@@ -30,6 +38,14 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // Server responded with error status
       console.error('API Error:', error.response.data)
+
+      // Handle 401 Unauthorized - token expired or invalid
+      if (error.response.status === 401) {
+        // Clear invalid token
+        localStorage.removeItem('auth_token')
+        // Optionally redirect to login page
+        // This can be handled by the auth store instead
+      }
     } else if (error.request) {
       // Request made but no response
       console.error('Network Error:', error.message)

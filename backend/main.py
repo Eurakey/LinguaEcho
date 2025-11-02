@@ -9,6 +9,8 @@ from slowapi.errors import RateLimitExceeded
 
 from app.config import settings
 from app.api.endpoints import router as api_router
+from app.api.auth import router as auth_router
+from app.api.history import router as history_router
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -16,8 +18,8 @@ limiter = Limiter(key_func=get_remote_address)
 # Create FastAPI app
 app = FastAPI(
     title="LinguaEcho API",
-    description="AI-driven language learning conversation practice platform",
-    version="1.0.0"
+    description="AI-driven language learning conversation practice platform with authentication",
+    version="2.0.0"
 )
 
 # Add rate limiter
@@ -35,6 +37,8 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(api_router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth")
+app.include_router(history_router, prefix="/api")
 
 
 @app.get("/")

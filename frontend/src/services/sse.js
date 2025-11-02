@@ -19,12 +19,21 @@ export class SSEClient {
     this.controller = new AbortController()
 
     try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem('auth_token')
+      const headers = {
+        'Content-Type': 'application/json',
+        ...this.options.headers,
+      }
+
+      // Add Authorization header if token exists
+      if (token) {
+        headers.Authorization = `Bearer ${token}`
+      }
+
       const response = await fetch(this.url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...this.options.headers,
-        },
+        headers,
         body: JSON.stringify(requestBody),
         signal: this.controller.signal,
       })

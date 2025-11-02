@@ -1,9 +1,11 @@
 """
 Pydantic models for API requests and responses
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Dict, Optional
 from enum import Enum
+from datetime import datetime
+from uuid import UUID
 
 
 class Language(str, Enum):
@@ -102,3 +104,71 @@ class ReportRequest(BaseModel):
 class ReportResponse(BaseModel):
     """Response model for /api/report/generate endpoint"""
     report: Report
+
+
+# Authentication Schemas
+
+class UserRegister(BaseModel):
+    """User registration request"""
+    email: EmailStr = Field(..., description="User email address")
+    password: str = Field(..., min_length=6, description="Password (min 6 characters)")
+
+
+class UserLogin(BaseModel):
+    """User login request"""
+    email: EmailStr = Field(..., description="User email address")
+    password: str = Field(..., description="User password")
+
+
+class Token(BaseModel):
+    """JWT token response"""
+    access_token: str = Field(..., description="JWT access token")
+    token_type: str = Field(default="bearer", description="Token type")
+
+
+class UserResponse(BaseModel):
+    """User information response"""
+    id: UUID = Field(..., description="User ID")
+    email: str = Field(..., description="User email")
+    created_at: datetime = Field(..., description="Account creation timestamp")
+
+    class Config:
+        from_attributes = True
+
+
+# Conversation History Schemas
+
+class ConversationListItem(BaseModel):
+    """Conversation item in list view"""
+    id: UUID
+    session_id: UUID
+    language: str
+    scenario: str
+    created_at: datetime
+    message_count: int
+    has_report: bool
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationDetail(BaseModel):
+    """Detailed conversation with messages and report"""
+    id: UUID
+    session_id: UUID
+    language: str
+    scenario: str
+    messages: List[Message]
+    created_at: datetime
+    report: Optional[Report] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Migration Schemas
+
+class MigrateDataRequest(BaseModel):
+    """Request to migrate localStorage conversations to database"""
+    conversations: List[Dict] = Field(..., description="List of conversations from localStorage")
+
