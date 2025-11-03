@@ -82,7 +82,7 @@ async def migrate_local_storage_data(
     }
 
 
-@router.get("/conversations", response_model=List[ConversationListItem])
+@router.get("/conversations", response_model=List[ConversationDetail])
 async def get_conversations(
     current_user: User = Depends(require_current_user),
     db: AsyncSession = Depends(get_db),
@@ -92,20 +92,37 @@ async def get_conversations(
     Get all conversations for the authenticated user
 
     - **limit**: Maximum number of conversations to return (default 50)
+
+    Returns full conversation details including messages and reports
     """
     conversations = await get_user_conversations(db, current_user.id, limit)
 
-    # Transform to response model
+    # Transform to response model with full details
     result = []
     for conv in conversations:
-        result.append(ConversationListItem(
+        # Parse messages from JSONB
+        messages = [Message(**msg) for msg in conv.messages] if conv.messages else []
+
+        # Parse report from relationship
+        report = None
+        if conv.report:
+            report_data = conv.report.report_data
+            report = ReportSchema(
+                overview=report_data.get('overview', {}),
+                grammar_errors=report_data.get('grammar_errors', []),
+                vocabulary_issues=report_data.get('vocabulary_issues', []),
+                naturalness=report_data.get('naturalness', []),
+                positive_feedback=report_data.get('positive_feedback', [])
+            )
+
+        result.append(ConversationDetail(
             id=conv.id,
             session_id=conv.session_id,
             language=conv.language,
             scenario=conv.scenario,
+            messages=messages,
             created_at=conv.created_at,
-            message_count=len(conv.messages),
-            has_report=conv.report is not None
+            report=report
         ))
 
     return result

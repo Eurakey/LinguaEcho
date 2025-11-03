@@ -65,7 +65,7 @@
               <!-- Stats -->
               <div class="flex gap-2">
                 <n-tag
-                  v-if="item.report.grammar_errors.length > 0"
+                  v-if="item.report && item.report.grammar_errors && item.report.grammar_errors.length > 0"
                   size="small"
                   type="warning"
                   :bordered="false"
@@ -73,7 +73,7 @@
                   {{ item.report.grammar_errors.length }} grammar
                 </n-tag>
                 <n-tag
-                  v-if="item.report.vocabulary_issues.length > 0"
+                  v-if="item.report && item.report.vocabulary_issues && item.report.vocabulary_issues.length > 0"
                   size="small"
                   type="info"
                   :bordered="false"
@@ -81,7 +81,7 @@
                   {{ item.report.vocabulary_issues.length }} vocabulary
                 </n-tag>
                 <n-tag
-                  v-if="item.report.naturalness.length > 0"
+                  v-if="item.report && item.report.naturalness && item.report.naturalness.length > 0"
                   size="small"
                   type="success"
                   :bordered="false"
@@ -89,7 +89,16 @@
                   {{ item.report.naturalness.length }} naturalness
                 </n-tag>
                 <n-tag
-                  v-if="item.report.grammar_errors.length === 0 &&
+                  v-if="!item.report"
+                  size="small"
+                  type="default"
+                  :bordered="false"
+                >
+                  No report yet
+                </n-tag>
+                <n-tag
+                  v-else-if="item.report.grammar_errors && item.report.vocabulary_issues && item.report.naturalness &&
+                        item.report.grammar_errors.length === 0 &&
                         item.report.vocabulary_issues.length === 0 &&
                         item.report.naturalness.length === 0"
                   size="small"
