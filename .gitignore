@@ -69,6 +69,10 @@ htmlcov/
 # Claude
 .claude/
 CLAUDE.md
+
 DEPLOYMENT.md
 MEMORY.md
 QUICKSTART.md
+
+# Interview preparation documents (not for version control)
+INTERVIEW_GUIDE.md
